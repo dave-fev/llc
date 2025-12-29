@@ -6,7 +6,7 @@ import { Loader2, Mail, CheckCircle, XCircle, Send } from 'lucide-react';
 export default function TestContactEmailPage() {
   const [testEmail, setTestEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; message: string; results?: any } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; message: string; results?: any; error?: string } | null>(null);
 
   const testContactEmail = async () => {
     if (!testEmail) {
@@ -89,11 +89,10 @@ export default function TestContactEmailPage() {
 
         {result && (
           <div
-            className={`bg-white rounded-2xl shadow-lg border-2 p-6 ${
-              result.success
+            className={`bg-white rounded-2xl shadow-lg border-2 p-6 ${result.success
                 ? 'bg-green-50 border-green-200'
                 : 'bg-red-50 border-red-200'
-            }`}
+              }`}
           >
             <div className="flex items-start gap-3">
               {result.success ? (
@@ -103,16 +102,14 @@ export default function TestContactEmailPage() {
               )}
               <div className="flex-1">
                 <h3
-                  className={`text-lg font-black mb-2 ${
-                    result.success ? 'text-green-900' : 'text-red-900'
-                  }`}
+                  className={`text-lg font-black mb-2 ${result.success ? 'text-green-900' : 'text-red-900'
+                    }`}
                 >
                   {result.success ? 'Test Successful!' : 'Test Failed'}
                 </h3>
                 <p
-                  className={`text-sm font-medium mb-3 ${
-                    result.success ? 'text-green-800' : 'text-red-800'
-                  }`}
+                  className={`text-sm font-medium mb-3 ${result.success ? 'text-green-800' : 'text-red-800'
+                    }`}
                 >
                   {result.message}
                 </p>
@@ -121,11 +118,10 @@ export default function TestContactEmailPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-bold text-neutral-700">Support Email:</span>
                       <span
-                        className={`font-bold ${
-                          result.results.supportEmail === 'Sent'
+                        className={`font-bold ${result.results.supportEmail === 'Sent'
                             ? 'text-green-600'
                             : 'text-red-600'
-                        }`}
+                          }`}
                       >
                         {result.results.supportEmail}
                       </span>
@@ -133,11 +129,10 @@ export default function TestContactEmailPage() {
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-bold text-neutral-700">User Email:</span>
                       <span
-                        className={`font-bold ${
-                          result.results.userEmail === 'Sent'
+                        className={`font-bold ${result.results.userEmail === 'Sent'
                             ? 'text-green-600'
                             : 'text-red-600'
-                        }`}
+                          }`}
                       >
                         {result.results.userEmail}
                       </span>

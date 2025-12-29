@@ -21,28 +21,27 @@ export default function SettingsPage() {
   const { showNotification, NotificationComponent } = useNotification();
 
   useEffect(() => {
+    const fetchContactSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/contact-settings');
+        if (response.ok) {
+          const data = await response.json();
+          setContactSettings(data.contactSettings || {
+            phoneNumber: '18007943835',
+            phoneDisplay: '1-800-SWIFT-FILL',
+            supportEmail: 'support@swiftsfilling.com',
+            contactEmail: 'support@swiftsfilling.com',
+            businessHours: 'Mon-Fri 9AM-6PM EST',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching contact settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchContactSettings();
   }, []);
-
-  const fetchContactSettings = async () => {
-    try {
-      const response = await fetch('/api/admin/contact-settings');
-      if (response.ok) {
-        const data = await response.json();
-        setContactSettings(data.contactSettings || {
-          phoneNumber: '18007943835',
-          phoneDisplay: '1-800-SWIFT-FILL',
-          supportEmail: 'support@swiftsfilling.com',
-          contactEmail: 'support@swiftsfilling.com',
-          businessHours: 'Mon-Fri 9AM-6PM EST',
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching contact settings:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSaveContactSettings = async () => {
     setIsSaving(true);

@@ -23,37 +23,36 @@ export default function ContactSettingsPage() {
   const { showNotification, NotificationComponent } = useNotification();
 
   useEffect(() => {
+    const fetchContactSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/contact-settings');
+        if (response.ok) {
+          const data = await response.json();
+          const settings = data.contactSettings || {};
+          // Ensure all fields are strings, not null or undefined
+          setContactSettings({
+            phoneNumber: settings.phoneNumber || '18007943835',
+            phoneDisplay: settings.phoneDisplay || '1-800-SWIFT-FILL',
+            supportEmail: settings.supportEmail || 'support@swiftsfilling.com',
+            contactEmail: settings.contactEmail || 'support@swiftsfilling.com',
+            businessHours: settings.businessHours || 'Mon-Fri 9AM-6PM EST',
+            streetAddress: settings.streetAddress || '',
+            addressLine2: settings.addressLine2 || '',
+            city: settings.city || '',
+            state: settings.state || '',
+            zipCode: settings.zipCode || '',
+            country: settings.country || 'United States',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching contact settings:', error);
+        showNotification('error', 'Failed to load contact settings', 'Error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchContactSettings();
   }, []);
-
-  const fetchContactSettings = async () => {
-    try {
-      const response = await fetch('/api/admin/contact-settings');
-      if (response.ok) {
-        const data = await response.json();
-        const settings = data.contactSettings || {};
-        // Ensure all fields are strings, not null or undefined
-        setContactSettings({
-          phoneNumber: settings.phoneNumber || '18007943835',
-          phoneDisplay: settings.phoneDisplay || '1-800-SWIFT-FILL',
-          supportEmail: settings.supportEmail || 'support@swiftsfilling.com',
-          contactEmail: settings.contactEmail || 'support@swiftsfilling.com',
-          businessHours: settings.businessHours || 'Mon-Fri 9AM-6PM EST',
-          streetAddress: settings.streetAddress || '',
-          addressLine2: settings.addressLine2 || '',
-          city: settings.city || '',
-          state: settings.state || '',
-          zipCode: settings.zipCode || '',
-          country: settings.country || 'United States',
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching contact settings:', error);
-      showNotification('error', 'Failed to load contact settings', 'Error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSave = async () => {
     // Validation

@@ -24,20 +24,19 @@ export function Footer({ onStart }: FooterProps) {
   });
 
   useEffect(() => {
+    const fetchContactSettings = async () => {
+      try {
+        const response = await fetch('/api/contact-settings');
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error('Error fetching contact settings:', error);
+      }
+    };
     fetchContactSettings();
   }, []);
-
-  const fetchContactSettings = async () => {
-    try {
-      const response = await fetch('/api/contact-settings');
-      if (response.ok) {
-        const data = await response.json();
-        setContactInfo(data);
-      }
-    } catch (error) {
-      console.error('Error fetching contact settings:', error);
-    }
-  };
 
   const handleStart = () => {
     if (onStart) {

@@ -36,20 +36,19 @@ export function ContactPageClient({ hideHeaderFooter = false }: ContactPageClien
   });
 
   useEffect(() => {
+    const fetchContactSettings = async () => {
+      try {
+        const response = await fetch('/api/contact-settings');
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error('Error fetching contact settings:', error);
+      }
+    };
     fetchContactSettings();
   }, []);
-
-  const fetchContactSettings = async () => {
-    try {
-      const response = await fetch('/api/contact-settings');
-      if (response.ok) {
-        const data = await response.json();
-        setContactInfo(data);
-      }
-    } catch (error) {
-      console.error('Error fetching contact settings:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

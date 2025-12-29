@@ -107,11 +107,10 @@ export function Step7AdditionalServices() {
         {services.map((service) => (
           <div
             key={service.id}
-            className={`p-8 border-2 rounded-2xl transition-all duration-300 cursor-pointer ${
-              formData.additionalServices[service.id]
+            className={`p-8 border-2 rounded-2xl transition-all duration-300 cursor-pointer ${formData.additionalServices[service.id as keyof typeof formData.additionalServices]
                 ? 'border-neutral-900 bg-neutral-50 shadow-xl'
                 : 'border-neutral-200 hover:border-neutral-300 hover:shadow-lg bg-white'
-            }`}
+              }`}
             onClick={() => toggleService(service.id as keyof typeof formData.additionalServices)}
           >
             <div className="flex items-start space-x-4">
