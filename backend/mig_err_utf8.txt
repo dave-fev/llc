@@ -1,0 +1,131 @@
+﻿
+   INFO  Running migrations.  
+
+  2025_12_29_000001_create_companies_table  13.27ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'companies' already exists (Connection: mysql, SQL: create table `companies` (`id` bigint unsigned not null auto_increment primary key, `order_id` bigint unsigned not null, `company_name` varchar(191) not null, `state` varchar(191) not null, `expiry_date` date not null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:826
+    822Γûò                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    823Γûò                 );
+    824Γûò             }
+    825Γûò 
+  Γ₧£ 826Γûò             throw new QueryException(
+    827Γûò                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    828Γûò             );
+    829Γûò         }
+    830Γûò     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'companies' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOStatement::execute()
+
+  3   vendor\laravel\framework\src\Illuminate\Database\Connection.php:813
+      Illuminate\Database\Connection::Illuminate\Database\{closure}()
+
+  4   vendor\laravel\framework\src\Illuminate\Database\Connection.php:780
+      Illuminate\Database\Connection::runQueryCallback()
+
+  5   vendor\laravel\framework\src\Illuminate\Database\Connection.php:559
+      Illuminate\Database\Connection::run()
+
+  6   vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:121
+      Illuminate\Database\Connection::statement()
+
+  7   vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:650
+      Illuminate\Database\Schema\Blueprint::build()
+
+  8   vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:504
+      Illuminate\Database\Schema\Builder::build()
+
+  9   vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:363
+      Illuminate\Database\Schema\Builder::create()
+
+  10  database\migrations\2025_12_29_000001_create_companies_table.php:11
+      Illuminate\Support\Facades\Facade::__callStatic()
+
+  11  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:517
+      Illuminate\Database\Migrations\Migration@anonymous\C:\Users\seeda\Videos\swift-filling\backend\database\migrations\2025_12_29_000001_create_companies_table.php:7$fb::up()
+
+  12  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:442
+      Illuminate\Database\Migrations\Migrator::runMethod()
+
+  13  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:451
+      Illuminate\Database\Migrations\Migrator::Illuminate\Database\Migrations\{closure}()
+
+  14  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:253
+      Illuminate\Database\Migrations\Migrator::runMigration()
+
+  15  vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
+      Illuminate\Database\Migrations\Migrator::Illuminate\Database\Migrations\{closure}()
+
+  16  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:812
+      Illuminate\Console\View\Components\Task::render()
+
+  17  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:253
+      Illuminate\Database\Migrations\Migrator::write()
+
+  18  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:211
+      Illuminate\Database\Migrations\Migrator::runUp()
+
+  19  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:138
+      Illuminate\Database\Migrations\Migrator::runPending()
+
+  20  vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
+      Illuminate\Database\Migrations\Migrator::run()
+
+  21  vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:669
+      Illuminate\Database\Console\Migrations\MigrateCommand::Illuminate\Database\Console\Migrations\{closure}()
+
+  22  vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
+      Illuminate\Database\Migrations\Migrator::usingConnection()
+
+  23  vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
+      Illuminate\Database\Console\Migrations\MigrateCommand::runMigrations()
+
+  24  vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+      Illuminate\Database\Console\Migrations\MigrateCommand::handle()
+
+  25  vendor\laravel\framework\src\Illuminate\Container\Util.php:43
+      Illuminate\Container\BoundMethod::Illuminate\Container\{closure}()
+
+  26  vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
+      Illuminate\Container\Util::unwrapIfClosure()
+
+  27  vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+      Illuminate\Container\BoundMethod::callBoundMethod()
+
+  28  vendor\laravel\framework\src\Illuminate\Container\Container.php:799
+      Illuminate\Container\BoundMethod::call()
+
+  29  vendor\laravel\framework\src\Illuminate\Console\Command.php:211
+      Illuminate\Container\Container::call()
+
+  30  vendor\symfony\console\Command\Command.php:341
+      Illuminate\Console\Command::execute()
+
+  31  vendor\laravel\framework\src\Illuminate\Console\Command.php:180
+      Symfony\Component\Console\Command\Command::run()
+
+  32  vendor\symfony\console\Application.php:1102
+      Illuminate\Console\Command::run()
+
+  33  vendor\symfony\console\Application.php:356
+      Symfony\Component\Console\Application::doRunCommand()
+
+  34  vendor\symfony\console\Application.php:195
+      Symfony\Component\Console\Application::doRun()
+
+  35  vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:198
+      Symfony\Component\Console\Application::run()
+
+  36  vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1235
+      Illuminate\Foundation\Console\Kernel::handle()
+
+  37  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+
