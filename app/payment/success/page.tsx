@@ -217,10 +217,10 @@ function PaymentStatusContent() {
               {!loginSuccess && (
                 <>
                   <button
-                    onClick={() => window.location.href = '/user'}
+                    onClick={() => window.location.href = loginSuccess ? '/user' : '/login'}
                     className="block w-full px-6 py-3 bg-neutral-900 text-white font-bold rounded-xl hover:bg-neutral-800 transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
-                    Go to Dashboard
+                    {loginSuccess ? 'Go to Dashboard' : 'Login to Dashboard'}
                   </button>
                   <Link
                     href="/"

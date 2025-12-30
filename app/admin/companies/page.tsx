@@ -44,7 +44,11 @@ export default function CompaniesPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [isSendDocModalOpen, setIsSendDocModalOpen] = useState(false);
-  const [docForm, setDocForm] = useState({ name: '', url: '', subject: '', message: '' });
+  const [docForm, setDocForm] = useState<{
+    file: File | null;
+    subject: string;
+    message: string;
+  }>({ file: null, subject: '', message: '' });
   const [sendingDoc, setSendingDoc] = useState(false);
 
   useEffect(() => {
@@ -92,35 +96,47 @@ export default function CompaniesPage() {
 
   const openSendDocModal = (company: Company) => {
     setSelectedCompany(company);
-    setDocForm({ name: '', url: '', subject: 'New Document/File', message: 'Hello, we have uploaded a new document for your LLC.' });
+    setDocForm({
+      file: null,
+      subject: `Document: ${company.company_name}`,
+      message: `Hello, we have uploaded a new document for your entity ${company.company_name}. You can view it in your dashboard or via the link below.`
+    });
     setIsSendDocModalOpen(true);
   };
 
   const handleSendDocument = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedCompany) return;
+    if (!selectedCompany || !docForm.file) {
+      alert('Please select a file to upload.');
+      return;
+    }
     setSendingDoc(true);
     try {
+      const formData = new FormData();
+      formData.append('companyId', selectedCompany.id.toString());
+      formData.append('documentFile', docForm.file);
+      formData.append('subject', docForm.subject);
+      formData.append('message', docForm.message);
+
       const response = await fetch('/api/admin/companies/send-document', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          companyId: selectedCompany.id,
-          documentName: docForm.name,
-          documentUrl: docForm.url,
-          subject: docForm.subject,
-          message: docForm.message
-        })
+        body: formData,
       });
       if (response.ok) {
-        alert('Document sent successfully!');
+        const result = await response.json();
+        if (result.email_sent) {
+          alert('Document sent and email notification delivered!');
+        } else {
+          alert('Document record created, but email notification failed. Please check mail settings.');
+        }
         setIsSendDocModalOpen(false);
       } else {
-        alert('Failed to send document.');
+        const errorData = await response.json();
+        alert(`Failed to send document: ${errorData.error || response.statusText}`);
       }
     } catch (error) {
       console.error(error);
-      alert('Error sending document');
+      alert('Error sending document. Please check your connection.');
     } finally {
       setSendingDoc(false);
     }
@@ -237,10 +253,10 @@ export default function CompaniesPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-3 py-1.5 rounded-full text-xs font-black shadow-sm ${company.order_status === 'completed'
-                            ? 'bg-green-100 text-green-700 border border-green-200'
-                            : company.order_status === 'processing'
-                              ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                              : 'bg-amber-100 text-amber-700 border border-amber-200'
+                          ? 'bg-green-100 text-green-700 border border-green-200'
+                          : company.order_status === 'processing'
+                            ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                            : 'bg-amber-100 text-amber-700 border border-amber-200'
                           }`}
                       >
                         {company.order_status ? company.order_status.charAt(0).toUpperCase() + company.order_status.slice(1) : 'N/A'}
@@ -284,15 +300,30 @@ export default function CompaniesPage() {
                   <h2 className="text-2xl font-black text-neutral-900">Company Details</h2>
                   <p className="text-sm text-neutral-600 mt-1">{selectedCompany.company_name}</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsViewModalOpen(false);
-                    setSelectedCompany(null);
-                  }}
-                  className="text-neutral-400 hover:text-neutral-600"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setIsSendDocModalOpen(true);
+                      setDocForm({
+                        file: null,
+                        subject: `Document: ${selectedCompany.company_name}`,
+                        message: `Hello, we have uploaded a new document for your entity ${selectedCompany.company_name}. You can view it in your dashboard or via the link below.`
+                      });
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-all shadow-sm"
+                  >
+                    Send Document
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      setSelectedCompany(null);
+                    }}
+                    className="text-neutral-400 hover:text-neutral-600"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -349,10 +380,10 @@ export default function CompaniesPage() {
                   <div>
                     <p className="text-xs font-bold text-neutral-600 uppercase mb-1">Status</p>
                     <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-black shadow-sm ${selectedCompany.order_status === 'completed'
-                        ? 'bg-green-100 text-green-700 border border-green-200'
-                        : selectedCompany.order_status === 'processing'
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-amber-100 text-amber-700 border border-amber-200'
+                      ? 'bg-green-100 text-green-700 border border-green-200'
+                      : selectedCompany.order_status === 'processing'
+                        ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                        : 'bg-amber-100 text-amber-700 border border-amber-200'
                       }`}>
                       {selectedCompany.order_status ? selectedCompany.order_status.charAt(0).toUpperCase() + selectedCompany.order_status.slice(1) : 'N/A'}
                     </span>
@@ -554,33 +585,45 @@ export default function CompaniesPage() {
       {isSendDocModalOpen && selectedCompany && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Send Entity Document</h3>
-              <button onClick={() => setIsSendDocModalOpen(false)}><X className="w-6 h-6" /></button>
+              <button onClick={() => setIsSendDocModalOpen(false)} className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"><X className="w-6 h-6" /></button>
             </div>
+
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+              <p className="text-xs font-bold text-blue-600 uppercase mb-2">Recipient Information</p>
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-neutral-900">Entity: {selectedCompany.company_name}</p>
+                <p className="text-sm text-neutral-700">Email: {selectedCompany.contact_email || selectedCompany.user?.email || 'N/A'}</p>
+                <p className="text-sm text-neutral-700">Order: {selectedCompany.order_number}</p>
+              </div>
+            </div>
+
             <form onSubmit={handleSendDocument} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold mb-1">Document Name</label>
-                <input required type="text" className="w-full border p-2 rounded" placeholder="e.g. Filed Articles of Organization"
-                  value={docForm.name} onChange={e => setDocForm({ ...docForm, name: e.target.value })} />
+                <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">Select Document (PDF)</label>
+                <div className="relative">
+                  <input
+                    required
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    onChange={e => setDocForm({ ...docForm, file: e.target.files ? e.target.files[0] : null })}
+                    className="w-full border-2 border-neutral-200 p-3 rounded-xl focus:border-neutral-900 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-neutral-900 file:text-white hover:file:bg-neutral-800"
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-bold mb-1">Document URL</label>
-                <input required type="url" className="w-full border p-2 rounded" placeholder="https://..."
-                  value={docForm.url} onChange={e => setDocForm({ ...docForm, url: e.target.value })} />
-              </div>
-              <div>
-                <label className="block text-sm font-bold mb-1">Subject</label>
-                <input required type="text" className="w-full border p-2 rounded"
+                <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">Email Subject</label>
+                <input required type="text" className="w-full border-2 border-neutral-200 p-3 rounded-xl focus:border-neutral-900 focus:outline-none"
                   value={docForm.subject} onChange={e => setDocForm({ ...docForm, subject: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-bold mb-1">Message</label>
-                <textarea required className="w-full border p-2 rounded h-24"
+                <label className="block text-xs font-bold text-neutral-700 uppercase mb-1">Message to Customer</label>
+                <textarea required className="w-full border-2 border-neutral-200 p-3 rounded-xl h-24 focus:border-neutral-900 focus:outline-none"
                   value={docForm.message} onChange={e => setDocForm({ ...docForm, message: e.target.value })} />
               </div>
-              <button disabled={sendingDoc} type="submit" className="w-full bg-neutral-900 text-white font-bold py-3 rounded-xl hover:bg-neutral-800 disabled:opacity-50">
-                {sendingDoc ? 'Sending...' : 'Send Document & Email'}
+              <button disabled={sendingDoc} type="submit" className="w-full bg-neutral-900 text-white font-bold py-4 rounded-xl hover:bg-neutral-800 disabled:opacity-50 transition-all shadow-xl hover:shadow-2xl">
+                {sendingDoc ? 'Sending to Customer...' : 'Send Document & Notification'}
               </button>
             </form>
           </div>

@@ -63,7 +63,7 @@ export default function LoginPage() {
         <div className="hidden lg:flex lg:w-11/24 relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 rounded-tr-[3rem] rounded-br-[3rem]">
           <div className="absolute inset-0">
             <Image
-              src="/im1.png"
+              src="/im2.png"
               alt="Modern workspace"
               fill
               className="object-cover opacity-40"

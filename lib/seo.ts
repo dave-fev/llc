@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://swiftsfilling.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.swiftsfilling.com/api';
 
 export async function getSEOMetadata(pagePath: string): Promise<Metadata> {
     try {

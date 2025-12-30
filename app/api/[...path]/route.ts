@@ -1,20 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://swiftsfilling.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.swiftsfilling.com/api';
 
 async function proxyRequest(request: NextRequest, endpoint: string) {
-    let body;
-    try {
-        body = await request.json();
-    } catch (e) {
-        body = undefined;
+    const contentTypeHeader = request.headers.get('content-type') || '';
+    const isMultipart = contentTypeHeader.includes('multipart/form-data');
+
+    let body: any;
+    if (isMultipart) {
+        body = await request.arrayBuffer();
+    } else {
+        try {
+            const rawBody = await request.json();
+            body = JSON.stringify(rawBody);
+        } catch (e) {
+            body = undefined;
+        }
     }
 
     const method = request.method;
     const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json', // Explicitly ask for JSON from Laravel
+        'Accept': 'application/json',
     };
+
+    if (!isMultipart) {
+        headers['Content-Type'] = 'application/json';
+    } else {
+        // For multipart, forward the EXACT content-type including boundary
+        headers['Content-Type'] = contentTypeHeader;
+    }
 
     // Forward auth token if present
     const authHeader = request.headers.get('Authorization');
@@ -33,7 +47,7 @@ async function proxyRequest(request: NextRequest, endpoint: string) {
         const response = await fetch(`${API_URL}/${endpoint}${searchParams}`, {
             method,
             headers,
-            body: (method !== 'GET' && method !== 'HEAD' && body) ? JSON.stringify(body) : undefined,
+            body: (method !== 'GET' && method !== 'HEAD') ? body : undefined,
         });
 
         const contentType = response.headers.get('content-type');
@@ -61,7 +75,15 @@ async function proxyRequest(request: NextRequest, endpoint: string) {
                 maxAge: 7 * 24 * 60 * 60,
                 path: '/',
             });
-        } else if (endpoint === 'auth/logout') {
+        }
+
+        if (endpoint === 'auth/logout') {
+            // Aggressively clear cookie
+            nextResponse.cookies.set('session_token', '', {
+                maxAge: 0,
+                path: '/',
+                expires: new Date(0)
+            });
             nextResponse.cookies.delete('session_token');
         }
 
